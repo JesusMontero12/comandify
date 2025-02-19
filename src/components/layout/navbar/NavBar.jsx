@@ -28,18 +28,9 @@ const NavBar = () => {
             <Nav className="ms-lg-auto d-flex flex-lg-row flex-column align-items-lg-end align-items-start">
               <OverlayTrigger
                 placement="bottom"
-                overlay={renderTooltip("Comandas")}
-              >
-                <Nav.Link as={NavLink} to="/orders">
-                  <FaClipboard /> <span className="d-lg-none">Comandas</span>
-                </Nav.Link>
-              </OverlayTrigger>
-
-              <OverlayTrigger
-                placement="bottom"
                 overlay={renderTooltip("Mesas")}
               >
-                <Nav.Link as={NavLink} to="/tables">
+                <Nav.Link as={NavLink} to="/">
                   <FaChair /> <span className="d-lg-none">Mesas</span>
                 </Nav.Link>
               </OverlayTrigger>

@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { db } from "../firebaseConfig";
 
 export const ProductContext = createContext();
 
@@ -15,6 +16,8 @@ const ProductProvider = ({ children }) => {
     { id: 4, name: "Coca-Cola", price: 2.5, category: "Bebidas" },
     { id: 5, name: "Cerveza", price: 4.99, category: "Bebidas" },
   ]);
+
+  
 
   let data = { products, setProducts };
   return (
