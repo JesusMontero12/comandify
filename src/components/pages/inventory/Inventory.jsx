@@ -9,30 +9,50 @@ import {
   Col,
   Badge,
   Toast,
+  InputGroup,
 } from "react-bootstrap";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 
 const Inventory = ({ data }) => {
   const {
-    showToast,
     showModal,
     inventory,
     newItem,
-    setShowToast,
+    removeIngredient,
     handleClose,
     handleShow,
     handleInputChange,
     handleSubmit,
     getStockStatus,
+    handleEdit,
+    handleSearch,
+    search,
+    filteredInventory,
   } = data;
+
   return (
     <>
       <h2 className="mb-4">Inventario</h2>
       <Card className="mb-4">
         <Card.Body>
-          <Button variant="primary" onClick={handleShow}>
-            <FaPlus className="me-2" /> Agregar Item al Inventario
-          </Button>
+          <Row className="align-items-center">
+            <Col md={6} className="mb-3 mb-md-0">
+              <Button variant="primary" onClick={handleShow}>
+                <FaPlus className="me-2" /> Agregar Item al Inventario
+              </Button>
+            </Col>
+            <Col md={6}>
+              <InputGroup>
+                <InputGroup.Text>
+                  <FaSearch />
+                </InputGroup.Text>
+                <Form.Control
+                  placeholder="Buscar por nombre, proveedor o ubicación..."
+                  onChange={handleSearch}
+                />
+              </InputGroup>
+            </Col>
+          </Row>
         </Card.Body>
       </Card>
 
@@ -53,32 +73,85 @@ const Inventory = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {inventory.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.nombre}</td>
-                  <td>
-                    {item.stockActual} {item.unidad}
-                    <br />
-                    <small className="text-muted">
-                      Mín: {item.stockMinimo}
-                    </small>
-                  </td>
-                  <td>{getStockStatus(item)}</td>
-                  <td>{item.proveedor}</td>
-                  <td>${item.costoUnitario.toFixed(2)}</td>
-                  <td>{item.ubicacion}</td>
-                  <td>{item.fechaVencimiento}</td>
-                  <td>
-                    <Button variant="warning" size="sm" className="me-2">
-                      <FaEdit />
-                    </Button>
-                    <Button variant="danger" size="sm">
-                      <FaTrash />
-                    </Button>
+              {filteredInventory.length > 0 ? (
+                filteredInventory.map((item, index) => (
+                  <tr key={item.id + index}>
+                    <td>{item.id.slice(0, 4) + "..."}</td>
+                    <td>{item.nombre}</td>
+                    <td>
+                      {item.stockActual} {item.unidad}
+                      <br />
+                      <small className="text-muted">
+                        Mín: {item.stockMinimo}
+                      </small>
+                    </td>
+                    <td>{getStockStatus(item)}</td>
+                    <td>{item.proveedor}</td>
+                    <td>${item.costoUnitario.toFixed(2)}</td>
+                    <td>{item.ubicacion}</td>
+                    <td>{item.fechaVencimiento}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleEdit(item)}
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => removeIngredient(item.id)}
+                      >
+                        <FaTrash />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : inventory.length > 0 ? (
+                inventory.map((item, index) => (
+                  <tr key={item.id + index}>
+                    <td>{item.id.slice(0, 4) + "..."}</td>
+                    <td>{item.nombre}</td>
+                    <td>
+                      {item.stockActual} {item.unidad}
+                      <br />
+                      <small className="text-muted">
+                        Mín: {item.stockMinimo}
+                      </small>
+                    </td>
+                    <td>{getStockStatus(item)}</td>
+                    <td>{item.proveedor}</td>
+                    <td>${item.costoUnitario.toFixed(2)}</td>
+                    <td>{item.ubicacion}</td>
+                    <td>{item.fechaVencimiento}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleEdit(item)}
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => removeIngredient(item.id)}
+                      >
+                        <FaTrash />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9" className="text-center">
+                    No hay inventario registrado.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </Table>
         </Card.Body>
@@ -171,6 +244,7 @@ const Inventory = ({ data }) => {
                     <option value="g">Gramos</option>
                     <option value="kg">Kilogramos</option>
                     <option value="ml">Mililitros</option>
+                    <option value="oz">Onza</option>
                     <option value="l">Litros</option>
                     <option value="rebanada">Rebanada</option>
                   </Form.Select>
