@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Toast } from "react-bootstrap";
 
-const ShowToastMessage = () => {
-  const [toast, setToast] = useState({ show: false, message, status });
+const useToastMessage = () => {
+  const [toast, setToast] = useState({ show: false, status: "", message: "" });
 
-  const showToast = (message, status) => {
-    setToast({ show: true, message, status });
+  const showToast = (status, message) => {
+    setToast({ show: true, status, message });
 
     setTimeout(() => {
-      setToast((prev) => ({ ...prev, show: "true" }));
+      setToast((prev) => ({ ...prev, show: false }));
     }, 3000);
   };
 
   const ToastComponent = () => (
+    // 🔹 Esto debe ser una función que devuelva JSX
     <Toast
       show={toast.show}
       onClose={() => setToast((prev) => ({ ...prev, show: false }))}
@@ -37,4 +38,4 @@ const ShowToastMessage = () => {
   return { showToast, ToastComponent };
 };
 
-export default ShowToastMessage;
+export default useToastMessage;
