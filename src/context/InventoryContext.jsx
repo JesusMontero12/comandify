@@ -74,7 +74,7 @@ const InventoryProvider = ({ children }) => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "¡No podrás revertir esto!",
-      icon: "warning", // 🔹 Se corrigió el icono
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
