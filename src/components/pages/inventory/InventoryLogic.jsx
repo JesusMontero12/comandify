@@ -94,7 +94,11 @@ const InventoryLogic = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newItem.nombre || !newItem.stockActual || !newItem.unidad) {
-      showToast("Error", "Por favor complete los campos requeridos");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor complete los campos requeridos.",
+      });
       return;
     }
 
@@ -113,6 +117,7 @@ const InventoryLogic = () => {
     handleClose();
   };
 
+  // FUNCION PARA FILTRAR PRODUCTOS
   const handleSearch = (event) => {
     const query = event.target.value;
     filterIngredients(query);
@@ -130,8 +135,8 @@ const InventoryLogic = () => {
     getStockStatus,
     handleEdit,
     handleSearch,
-    search,
     filteredInventory,
+    isEditing,
   };
 
   return (
