@@ -26,8 +26,8 @@ const Inventory = ({ data }) => {
     getStockStatus,
     handleEdit,
     handleSearch,
+    search,
     filteredInventory,
-    isEditing,
   } = data;
 
   return (
@@ -160,11 +160,7 @@ const Inventory = ({ data }) => {
       {/* Modal para agregar item al inventario */}
       <Modal show={showModal} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>
-            {isEditing === true
-              ? "Actualizar Inventario"
-              : "Agregar Nuevo Item al Inventario"}
-          </Modal.Title>
+          <Modal.Title>Agregar Nuevo Item al Inventario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -314,15 +310,9 @@ const Inventory = ({ data }) => {
               >
                 Cancelar
               </Button>
-              {isEditing === true ? (
-                <Button variant="primary" type="submit">
-                  Actualizar Item
-                </Button>
-              ) : (
-                <Button variant="primary" type="submit">
-                  Guardar Item
-                </Button>
-              )}
+              <Button variant="primary" type="submit">
+                Guardar Item
+              </Button>
             </div>
           </Form>
         </Modal.Body>
