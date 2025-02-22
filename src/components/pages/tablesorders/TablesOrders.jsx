@@ -43,10 +43,13 @@ const TablesOrders = () => {
     notes: "",
   });
 
-  const filteredProducts = products.filter(
+  const filteredProducts = products?.filter(
     (product) =>
-      product.name.toLowerCase().includes(search.toLowerCase()) ||
-      product.category.toLowerCase().includes(search.toLowerCase())
+      (product?.name?.toLowerCase() ?? "").includes(search?.toLowerCase()) ||
+      (Array.isArray(product?.category)
+        ? product.category.join(" ").toLowerCase()
+        : product?.category?.toLowerCase() ?? ""
+      ).includes(search?.toLowerCase())
   );
 
   const handleTableSelect = (tableNumber) => {
@@ -319,20 +322,49 @@ const TablesOrders = () => {
             <Row>
               <Col md={6}>
                 <ListGroup className="mb-3">
-                  {filteredProducts.map((product) => (
-                    <ListGroup.Item
-                      key={product.id}
-                      className="d-flex justify-content-between align-items-center"
-                      action
-                      onClick={(e) => addToOrder(e, product)}
-                    >
-                      <div>
-                        <h6 className="mb-0">{product.name}</h6>
-                        <small className="text-muted">{product.category}</small>
-                      </div>
-                      <Badge bg="primary">${product.price.toFixed(2)}</Badge>
-                    </ListGroup.Item>
-                  ))}
+                  {filteredProducts.length > 0
+                    ? filteredProducts.map((product) => (
+                        <ListGroup.Item
+                          key={product.id}
+                          className="d-flex justify-content-between align-items-center"
+                          action
+                          onClick={(e) => addToOrder(e, product)}
+                        >
+                          <div>
+                            <h6 className="mb-0">{product.name}</h6>
+                            <small className="text-muted">
+                              {product.category}
+                            </small>
+                          </div>
+                          <Badge bg="primary">
+                            $
+                            {Number(product.price)
+                              .toFixed(0)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                          </Badge>
+                        </ListGroup.Item>
+                      ))
+                    : products?.map((product) => {
+                        <ListGroup.Item
+                          key={product.id}
+                          className="d-flex justify-content-between align-items-center"
+                          action
+                          onClick={(e) => addToOrder(e, product)}
+                        >
+                          <div>
+                            <h6 className="mb-0">{product.name}</h6>
+                            <small className="text-muted">
+                              {product.category}
+                            </small>
+                          </div>
+                          <Badge bg="primary">
+                            $
+                            {Number(product.price)
+                              .toFixed(0)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                          </Badge>
+                        </ListGroup.Item>;
+                      })}
                 </ListGroup>
               </Col>
 
@@ -347,7 +379,11 @@ const TablesOrders = () => {
                       <div>
                         <h6 className="mb-0">{item.name}</h6>
                         <small className="text-muted">
-                          ${item.price.toFixed(2)} x {item.quantity}
+                          $
+                          {Number(item.price)
+                            .toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                          x {item.quantity}
                         </small>
                       </div>
                       <div className="d-flex align-items-center">

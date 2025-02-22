@@ -10,19 +10,24 @@ const InventoryLogic = () => {
   const [search, setSearch] = useState("");
   const [newItem, setNewItem] = useState({
     nombre: "",
+    stockInicial: "",
     stockActual: "",
     stockMinimo: "",
+    stockConsumido: "",
     proveedor: "",
     cantidadPeso: "",
     unidad: "",
     costoUnitario: "",
     fechaIngreso: "",
     fechaVencimiento: "",
+    fechaRegistro: "",
+    fechaActualizacion: "",
     ubicacion: "",
   });
   const { showToast, ToastComponent } = useToastMessage();
   const {
     inventory,
+    setInventory,
     fetchInventory,
     addIngredients,
     updateIngredient,
@@ -30,10 +35,17 @@ const InventoryLogic = () => {
     filterIngredients,
     filteredInventory,
   } = useContext(InventoryContext);
+  const [loading, setLoading] = useState(true);
 
   // CARGA TODO EL INVENTARIO
   useEffect(() => {
-    fetchInventory(); // Cargar inventario cuando se monta el componente
+    setLoading(true);
+
+    setTimeout(() => {
+      fetchInventory();
+      setInventory(fetchInventory);
+      setLoading(false);
+    }, 2000);
   }, []);
 
   // CIERRA LA VENTANA MODAL
@@ -42,14 +54,18 @@ const InventoryLogic = () => {
     setIsEditing(false);
     setNewItem({
       nombre: "",
+      stockInicial: "",
       stockActual: "",
       stockMinimo: "",
+      stockConsumido: "",
       proveedor: "",
       cantidadPeso: "",
       unidad: "",
       costoUnitario: "",
       fechaIngreso: "",
       fechaVencimiento: "",
+      fechaRegistro: "",
+      fechaActualizacion: "",
       ubicacion: "",
     });
   };
@@ -109,6 +125,10 @@ const InventoryLogic = () => {
       stockMinimo: Number(newItem.stockMinimo),
       cantidadPeso: Number(newItem.cantidadPeso),
       costoUnitario: Number(newItem.costoUnitario),
+      ...(isEditing === false && {
+        fechaRegistro: new Date().toISOString().split("T")[0],
+      }),
+      fechaActualizacion: new Date().toISOString().split("T")[0],
     };
 
     isEditing === true
@@ -137,6 +157,7 @@ const InventoryLogic = () => {
     handleSearch,
     filteredInventory,
     isEditing,
+    loading,
   };
 
   return (

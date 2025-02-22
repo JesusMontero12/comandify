@@ -10,6 +10,7 @@ import {
   Modal,
   Badge,
   InputGroup,
+  Placeholder,
 } from "react-bootstrap";
 import { FaPlus, FaPen, FaTrash, FaSearch } from "react-icons/fa";
 
@@ -33,6 +34,7 @@ const Products = ({ data }) => {
     addIngredient,
     removeIngredient,
     isEditing,
+    loading,
   } = data;
 
   return (
@@ -77,107 +79,110 @@ const Products = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredProduct.length > 0 ? (
-                filteredProduct.map((product, index) => (
-                  <tr key={product.id + index}>
-                    <td>{product.id.slice(0, 4) + "..."}</td>
-                    <td>{product.nombre}</td>
-                    <td>${product.precio}</td>
-                    <td>{product.descripcion.slice(0, 10) + "..."}</td>
-                    <td>{product.proveedor}</td>
-                    <td>
-                      <Badge
-                        bg={
-                          product.estado === "true" || product.estado === true
-                            ? "success"
-                            : "danger"
-                        }
-                      >
-                        {product.estado === "true" || product.estado === true
-                          ? "Activo"
-                          : "Inactivo"}
-                      </Badge>
-                    </td>
-                    <td>
-                      <ul className="list-unstyled m-0">
-                        {product.ingredientes.map((ing) => (
-                          <li key={ing.id}>
-                            {getIngredientName(ing.id)} ({ing.cantidad}{" "}
-                            {ing.unidad})
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleEdit(product)}
-                      >
-                        <FaPen />
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => removeProduct(product.id)}
-                      >
-                        <FaTrash />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              ) : products.length > 0 ? (
-                products.map((product, index) => (
-                  <tr key={product.id + index}>
-                    <td>{product.id.slice(0, 4) + "..."}</td>
-                    <td>{product.nombre}</td>
-                    <td>${product.precio}</td>
-                    <td>{product.descripcion.slice(0, 10) + "..."}</td>
-                    <td>{product.proveedor}</td>
-                    <td>
-                      <Badge
-                        bg={
-                          product.estado === "true" || product.estado === true
-                            ? "success"
-                            : "danger"
-                        }
-                      >
-                        {product.estado === "true" || product.estado === true
-                          ? "Activo"
-                          : "Inactivo"}
-                      </Badge>
-                    </td>
-                    <td>
-                      <ul className="list-unstyled m-0">
-                        {product.ingredientes.map((ing) => (
-                          <li key={ing.id}>
-                            {getIngredientName(ing.id)} ({ing.cantidad}{" "}
-                            {ing.unidad})
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleEdit(product)}
-                      >
-                        <FaPen />
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => removeProduct(product.id)}
-                      >
-                        <FaTrash />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
+              {loading ? ( // Mientras se cargan los productos, muestra los placeholders
+                <tr>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder.Button
+                      xs={4}
+                      className="m-1"
+                      aria-hidden="true"
+                    />
+                    <Placeholder.Button
+                      xs={4}
+                      className="m-1"
+                      aria-hidden="true"
+                    />
+                  </td>
+                </tr>
+              ) : products.length > 0 ? ( // Si hay productos, renderiza la lista
+                (filteredProduct.length > 0 ? filteredProduct : products).map(
+                  (product, index) => {
+                    const estadoValido = Boolean(JSON.parse(product.estado));
+                    return (
+                      <tr key={product.id + index}>
+                        <td>{product.id.slice(0, 4) + "..."}</td>
+                        <td>{product.nombre}</td>
+                        <td>
+                          $
+                          {Number(product.precio)
+                            .toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                        </td>
+                        <td>{product.descripcion.slice(0, 10) + "..."}</td>
+                        <td>{product.proveedor}</td>
+                        <td>
+                          <Badge bg={estadoValido ? "success" : "danger"}>
+                            {estadoValido ? "Activo" : "Inactivo"}
+                          </Badge>
+                        </td>
+                        <td>
+                          <ul className="list-unstyled m-0">
+                            {product.ingredientes.map((ing) => (
+                              <li key={ing.id}>
+                                * {getIngredientName(ing.id)} ({ing.cantidad}
+                                {ing.unidad})
+                              </li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td>
+                          <Button
+                            variant="warning"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleEdit(product)}
+                          >
+                            <FaPen />
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => removeProduct(product.id)}
+                          >
+                            <FaTrash />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )
               ) : (
+                // Si no hay productos después de cargar, muestra el mensaje
                 <tr>
                   <td colSpan="8" className="text-center">
                     No hay productos registrados.

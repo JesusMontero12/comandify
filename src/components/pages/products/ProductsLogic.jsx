@@ -34,9 +34,16 @@ const ProductsLogic = () => {
     id: "",
     cantidad: "",
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProduct();
+    setLoading(true); 
+
+    setTimeout(() => {
+      fetchProduct();
+      setProducts(fetchProduct);
+      setLoading(false); 
+    }, 2000);
   }, []);
 
   // CIERRA LA VENTANA MODAL
@@ -109,7 +116,9 @@ const ProductsLogic = () => {
     const productToAdd = {
       ...newProduct,
       precio: Number(newProduct.precio),
-      fechaRegistro: new Date().toISOString().split("T")[0],
+      ...(isEditing === false && {
+        fechaRegistro: new Date().toISOString().split("T")[0],
+      }),
       fechaActualizacion: new Date().toISOString().split("T")[0],
     };
 
@@ -209,6 +218,7 @@ const ProductsLogic = () => {
     addIngredient,
     removeIngredient,
     isEditing,
+    loading,
   };
   return (
     <>

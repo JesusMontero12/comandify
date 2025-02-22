@@ -108,6 +108,7 @@ const InventoryProvider = ({ children }) => {
 
   let data = {
     inventory,
+    setInventory,
     fetchInventory,
     addIngredients,
     updateIngredient,

@@ -10,6 +10,7 @@ import {
   Badge,
   Toast,
   InputGroup,
+  Placeholder,
 } from "react-bootstrap";
 import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 
@@ -28,6 +29,7 @@ const Inventory = ({ data }) => {
     handleSearch,
     filteredInventory,
     isEditing,
+    loading,
   } = data;
 
   return (
@@ -64,16 +66,88 @@ const Inventory = ({ data }) => {
                 <th>ID</th>
                 <th>Producto</th>
                 <th>Stock Actual</th>
+                <th>Cuadre Stock</th>
                 <th>Estado</th>
                 <th>Proveedor</th>
                 <th>Costo Unitario</th>
                 <th>Ubicación</th>
                 <th>Vencimiento</th>
+                <th>Actualizado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {filteredInventory.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder as="p" animation="glow">
+                      <Placeholder xs={12} />
+                    </Placeholder>
+                  </td>
+                  <td>
+                    <Placeholder.Button
+                      xs={4}
+                      className="m-1"
+                      aria-hidden="true"
+                    />
+                    <Placeholder.Button
+                      xs={4}
+                      className="m-1"
+                      aria-hidden="true"
+                    />
+                  </td>
+                </tr>
+              ) : filteredInventory.length > 0 ? (
+                // Mostrar inventario filtrado si hay resultados
                 filteredInventory.map((item, index) => (
                   <tr key={item.id + index}>
                     <td>{item.id.slice(0, 4) + "..."}</td>
@@ -85,11 +159,38 @@ const Inventory = ({ data }) => {
                         Mín: {item.stockMinimo}
                       </small>
                     </td>
+                    <td>
+                      {(() => {
+                        const stockTotal =
+                          Number(item.stockConsumido) +
+                          Number(item.stockActual);
+
+                        const esValido =
+                          Number(stockTotal) === Number(item.stockInicial);
+
+                        const diferencia = Math.abs(
+                          item.stockInicial - stockTotal
+                        ); // Diferencia absoluta
+
+                        return (
+                          <Badge bg={esValido ? "success" : "danger"}>
+                            {esValido ? "Ok" : `Descuadre (-${diferencia})`}
+                          </Badge>
+                        );
+                      })()}
+                    </td>
+
                     <td>{getStockStatus(item)}</td>
                     <td>{item.proveedor}</td>
-                    <td>${item.costoUnitario.toFixed(2)}</td>
+                    <td>
+                      $
+                      {item.costoUnitario
+                        .toFixed(0)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                    </td>
                     <td>{item.ubicacion}</td>
                     <td>{item.fechaVencimiento}</td>
+                    <td>{item.fechaActualizacion}</td>
                     <td>
                       <Button
                         variant="warning"
@@ -110,6 +211,7 @@ const Inventory = ({ data }) => {
                   </tr>
                 ))
               ) : inventory.length > 0 ? (
+                // Mostrar inventario completo si no hay filtrado
                 inventory.map((item, index) => (
                   <tr key={item.id + index}>
                     <td>{item.id.slice(0, 4) + "..."}</td>
@@ -121,11 +223,34 @@ const Inventory = ({ data }) => {
                         Mín: {item.stockMinimo}
                       </small>
                     </td>
+                    <td>
+                      {(() => {
+                        const stockTotal =
+                          item.stockConsumido + item.stockActual;
+                        const esValido = stockTotal === item.stockInicial;
+                        const diferencia = Math.abs(
+                          item.stockInicial - stockTotal
+                        ); // Diferencia absoluta
+
+                        return (
+                          <Badge bg={esValido ? "success" : "danger"}>
+                            {esValido ? "Ok" : `Descuadre (-${diferencia})`}
+                          </Badge>
+                        );
+                      })()}
+                    </td>
+
                     <td>{getStockStatus(item)}</td>
                     <td>{item.proveedor}</td>
-                    <td>${item.costoUnitario.toFixed(2)}</td>
+                    <td>
+                      $
+                      {item.costoUnitario
+                        .toFixed(0)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                    </td>
                     <td>{item.ubicacion}</td>
                     <td>{item.fechaVencimiento}</td>
+                    <td>{item.fechaActualizacion}</td>
                     <td>
                       <Button
                         variant="warning"
@@ -146,8 +271,9 @@ const Inventory = ({ data }) => {
                   </tr>
                 ))
               ) : (
+                // No hay inventario después de cargar
                 <tr>
-                  <td colSpan="9" className="text-center">
+                  <td colSpan="10" className="text-center">
                     No hay inventario registrado.
                   </td>
                 </tr>
@@ -196,6 +322,18 @@ const Inventory = ({ data }) => {
             </Row>
 
             <Row>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Stock Inicial*</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="stockInicial"
+                    value={newItem.stockInicial}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
               <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Stock Actual*</Form.Label>
