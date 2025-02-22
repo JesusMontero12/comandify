@@ -1,0 +1,25 @@
+[33m2cf3494[m[33m ([m[1;36mHEAD[m[33m)[m HEAD@{0}: commit: Fix-Dev_001: corregir errores del inventory y products.
+[33me6c76b8[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/Fix-Dev-001[m[33m, [m[1;32mdev[m[33m)[m HEAD@{1}: pull origin Fix-Dev-001 --rebase (start): checkout e6c76b8da29859ba7741a4c3c69ff0dac3cfe2bb
+[33m0ab120a[m[33m ([m[1;32mFix-Dev-001[m[33m)[m HEAD@{2}: commit: Fix-Dev_001: corregir errores del inventory y products.
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{3}: reset: moving to Features-Dev-002
+[33me724d47[m HEAD@{4}: checkout: moving from Features-Dev-002 to Fix-Dev-001
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{5}: checkout: moving from Fix-Dev-001 to Features-Dev-002
+[33me724d47[m HEAD@{6}: checkout: moving from Features-Dev-002 to Fix-Dev-001
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{7}: checkout: moving from Fix-Dev-001 to Features-Dev-002
+[33me724d47[m HEAD@{8}: rebase (finish): returning to refs/heads/Fix-Dev-001
+[33me724d47[m HEAD@{9}: rebase (pick): Revert "Features-dev-002: crear crud para products"
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{10}: rebase (start): checkout Features-Dev-002
+[33me6c76b8[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/Fix-Dev-001[m[33m, [m[1;32mdev[m[33m)[m HEAD@{11}: checkout: moving from dev to Fix-Dev-001
+[33me6c76b8[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/Fix-Dev-001[m[33m, [m[1;32mdev[m[33m)[m HEAD@{12}: checkout: moving from Features-Dev-002 to dev
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{13}: checkout: moving from dev to Features-Dev-002
+[33me6c76b8[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/Fix-Dev-001[m[33m, [m[1;32mdev[m[33m)[m HEAD@{14}: checkout: moving from main to dev
+[33ma54f3a2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{15}: checkout: moving from Features-Dev-002 to main
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{16}: checkout: moving from Fix-Dev-001 to Features-Dev-002
+[33me6c76b8[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/Fix-Dev-001[m[33m, [m[1;32mdev[m[33m)[m HEAD@{17}: checkout: moving from Features-Dev-002 to Fix-Dev-001
+[33m501ccae[m[33m ([m[1;31morigin/Features-Dev-002[m[33m, [m[1;32mFeatures-Dev-002[m[33m)[m HEAD@{18}: commit: Features-dev-002: crear crud para products
+[33m59456e0[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{19}: checkout: moving from Features-Dev-001 to Features-Dev-002
+[33m84d23cf[m[33m ([m[1;31morigin/Features-Dev-001[m[33m, [m[1;32mFeatures-Dev-001[m[33m)[m HEAD@{20}: commit: Features-dev-001: crear crud para inventory.
+[33ma54f3a2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{21}: checkout: moving from main to Features-Dev-001
+[33ma54f3a2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{22}: commit: cambios del diseno avanzado
+[33m260c5e7[m HEAD@{23}: Branch: renamed refs/heads/main to refs/heads/main
+[33m260c5e7[m HEAD@{25}: commit (initial): diseno avanzado y estructurado
