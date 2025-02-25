@@ -1,5 +1,4 @@
 import "./TablesOrders.css";
-import { useContext, useState } from "react";
 import {
   Card,
   Row,
@@ -19,175 +18,40 @@ import {
   FaCreditCard,
   FaPlus,
 } from "react-icons/fa";
-import { TablesContext } from "../../../context/TablesContext";
-import { ProductContext } from "../../../context/ProductContext";
-import { OrdersContext } from "../../../context/OrdersContext";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 
-const TablesOrders = () => {
-  const tables = Array.from({ length: 12 }, (_, i) => i + 1);
-  const { isTableActive, openTable, closeTable } = useContext(TablesContext);
-  const { products } = useContext(ProductContext);
-  const { orders, addOrder, updateOrderStatus } = useContext(OrdersContext);
-
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [search, setSearch] = useState("");
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-  const [modalTable, setModalTable] = useState(null);
-  const [order, setOrder] = useState({
-    table: "",
-    items: [],
-    notes: "",
-  });
-
-  const filteredProducts = products?.filter(
-    (product) =>
-      (product?.name?.toLowerCase() ?? "").includes(search?.toLowerCase()) ||
-      (Array.isArray(product?.category)
-        ? product.category.join(" ").toLowerCase()
-        : product?.category?.toLowerCase() ?? ""
-      ).includes(search?.toLowerCase())
-  );
-
-  const handleTableSelect = (tableNumber) => {
-    if (isTableActive(tableNumber)) {
-      setModalTable(tableNumber);
-      setShowDetailsModal(true);
-    } else {
-      setSelectedTable(tableNumber);
-      setOrder((prev) => ({
-        ...prev,
-        table: tableNumber.toString(),
-        items: [],
-      }));
-      setShowOrderModal(true);
-    }
-  };
-
-  const getTableOrders = (tableNumber) => {
-    return orders.filter(
-      (order) =>
-        order.table === tableNumber?.toString() && order.status !== "completed"
-    );
-  };
-
-  const calculateTableTotal = (tableOrders) => {
-    return tableOrders.reduce((total, order) => total + order.total, 0);
-  };
-
-  const handleCloseTable = () => {
-    if (!selectedPaymentMethod) {
-      alert("Por favor seleccione un método de pago");
-      return;
-    }
-
-    const tableOrders = getTableOrders(modalTable);
-    tableOrders.forEach((order) => {
-      updateOrderStatus(order.id, "completed", selectedPaymentMethod);
-    });
-
-    closeTable(modalTable);
-    setShowDetailsModal(false);
-    setSelectedPaymentMethod("");
-    setModalTable(null);
-  };
-
-  const addToOrder = (e, product) => {
-    e.preventDefault();
-    setOrder((prevOrder) => {
-      const existingItem = prevOrder.items.find(
-        (item) => item.id === product.id
-      );
-
-      if (existingItem) {
-        return {
-          ...prevOrder,
-          items: prevOrder.items.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          ),
-        };
-      }
-
-      return {
-        ...prevOrder,
-        items: [...prevOrder.items, { ...product, quantity: 1 }],
-      };
-    });
-  };
-
-  const removeFromOrder = (productId) => {
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      items: prevOrder.items.filter((item) => item.id !== productId),
-    }));
-  };
-
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      items: prevOrder.items.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      ),
-    }));
-  };
-
-  const calculateTotal = () => {
-    return order.items.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!order.table || order.items.length === 0) {
-      alert("Por favor agregue productos a la orden");
-      return;
-    }
-
-    const newOrder = addOrder({
-      ...order,
-      total: calculateTotal(),
-    });
-
-    openTable(parseInt(order.table));
-    setShowToast(true);
-    setShowOrderModal(false);
-
-    // Reset order
-    setOrder({
-      table: "",
-      items: [],
-      notes: "",
-    });
-  };
+const TablesOrders = ({ data }) => {
+  const {
+    tables,
+    isTableActive,
+    products,
+    selectedTable,
+    setSelectedTable,
+    showDetailsModal,
+    setShowDetailsModal,
+    showOrderModal,
+    setShowOrderModal,
+    selectedPaymentMethod,
+    setSelectedPaymentMethod,
+    modalTable,
+    order,
+    setOrder,
+    filteredProduct,
+    handleTableSelect,
+    getTableOrders,
+    handleCloseTable,
+    addToOrder,
+    removeFromOrder,
+    updateQuantity,
+    calculateTotal,
+    handleSubmit,
+    handleSearch,
+    handleInputChange,
+    total,
+    subtotal,
+  } = data;
   return (
     <>
-      <Toast
-        show={showToast}
-        onClose={() => setShowToast(false)}
-        delay={3000}
-        autohide
-        style={{
-          position: "fixed",
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-        }}
-      >
-        <Toast.Header>
-          <strong className="me-auto">¡Éxito!</strong>
-        </Toast.Header>
-        <Toast.Body>Comanda generada correctamente</Toast.Body>
-      </Toast>
-
       {/* Modal para detalles de mesa y pago */}
       <Modal
         show={showDetailsModal}
@@ -204,7 +68,10 @@ const TablesOrders = () => {
               variant="primary"
               onClick={() => {
                 setSelectedTable(modalTable);
-                setOrder((prev) => ({ ...prev, table: modalTable.toString() }));
+                setOrder((prev) => ({
+                  ...prev,
+                  numeroMesa: modalTable.toString(),
+                }));
                 setShowDetailsModal(false);
                 setShowOrderModal(true);
               }}
@@ -214,20 +81,30 @@ const TablesOrders = () => {
             </Button>
           </div>
           {modalTable &&
-            getTableOrders(modalTable).map((order) => (
-              <Card key={order.id} className="mb-3">
+            getTableOrders(modalTable).map((order, index) => (
+              <Card key={order.id + index} className="mb-3">
                 <Card.Body>
-                  <h6>Orden #{order.id}</h6>
+                  <div className="d-flex justify-content-between">
+                    <h6>Orden #: {order.id}</h6>
+                    <p>Fecha: {order.aperturaMesa}</p>
+                  </div>
                   <ListGroup variant="flush">
                     {order.items.map((item, index) => (
                       <ListGroup.Item key={index}>
-                        {item.quantity}x {item.name} - $
-                        {(item.price * item.quantity).toFixed(2)}
+                        {item.cantidad}x {item.nombre} - ${" "}
+                        {Number(item.precio * item.cantidad)
+                          .toFixed(0)
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
                   <div className="mt-2">
-                    <strong>Total: ${order.total.toFixed(2)}</strong>
+                    <strong>
+                      Total: ${" "}
+                      {Number(order.subtotal)
+                        .toFixed(0)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                    </strong>
                   </div>
                   {order.notes && (
                     <div className="mt-2">
@@ -239,26 +116,45 @@ const TablesOrders = () => {
             ))}
 
           <div className="mt-4">
+            <Form.Group className="mb-3">
+              <Form.Label>Descuento: {order.descuento} %</Form.Label>
+              <Form.Range
+                min={0}
+                max={100}
+                name="descuento"
+                value={order.descuento}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Propina</Form.Label>
+              <Form.Control
+                type="num"
+                name="propina"
+                value={order.propina || ""}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
             <h5>Método de Pago</h5>
             <div className="d-flex gap-2 mb-3">
               <Button
                 variant={
-                  selectedPaymentMethod === "cash"
+                  selectedPaymentMethod === "efectivo"
                     ? "primary"
                     : "outline-primary"
                 }
-                onClick={() => setSelectedPaymentMethod("cash")}
+                onClick={() => setSelectedPaymentMethod("efectivo")}
               >
                 <FaMoneyBill className="me-2" />
                 Efectivo
               </Button>
               <Button
                 variant={
-                  selectedPaymentMethod === "card"
+                  selectedPaymentMethod === "tarjeta"
                     ? "primary"
                     : "outline-primary"
                 }
-                onClick={() => setSelectedPaymentMethod("card")}
+                onClick={() => setSelectedPaymentMethod("tarjeta")}
               >
                 <FaCreditCard className="me-2" />
                 Tarjeta
@@ -266,11 +162,11 @@ const TablesOrders = () => {
 
               <Button
                 variant={
-                  selectedPaymentMethod === "transfer"
+                  selectedPaymentMethod === "transferencia"
                     ? "primary"
                     : "outline-primary"
                 }
-                onClick={() => setSelectedPaymentMethod("transfer")}
+                onClick={() => setSelectedPaymentMethod("transferencia")}
               >
                 <FaMoneyBillTransfer className="me-2" />
                 Transferencia
@@ -278,11 +174,25 @@ const TablesOrders = () => {
             </div>
           </div>
 
-          <div className="mt-3">
-            <h5>Total a Pagar</h5>
-            <h3>
-              ${calculateTableTotal(getTableOrders(modalTable)).toFixed(2)}
-            </h3>
+          <div className="mt-3 d-flex justify-content-between">
+            <div>
+              <h5>Subtotal</h5>
+              <h3>
+                ${" "}
+                {Number(subtotal)
+                  .toFixed(0)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+              </h3>
+            </div>
+            <div>
+              <h5>Total a Pagar</h5>
+              <h3>
+                ${" "}
+                {Number(total)
+                  .toFixed(0)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+              </h3>
+            </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -314,76 +224,67 @@ const TablesOrders = () => {
               <Form.Control
                 type="text"
                 placeholder="Buscar por nombre o categoría..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearch}
               />
             </Form.Group>
 
             <Row>
               <Col md={6}>
-                <ListGroup className="mb-3">
-                  {filteredProducts.length > 0
-                    ? filteredProducts.map((product) => (
+                <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                  <ListGroup className="mb-3">
+                    {(filteredProduct?.length > 0 ? filteredProduct : products)
+                      ?.length > 0 ? (
+                      (filteredProduct?.length > 0
+                        ? filteredProduct
+                        : products
+                      ).map((product, index) => (
                         <ListGroup.Item
-                          key={product.id}
-                          className="d-flex justify-content-between align-items-center"
+                          key={product?.id + index}
+                          className={`d-flex justify-content-between align-items-center ${
+                            product.estado === true ? "d-flex" : "disabled"
+                          }`}
                           action
                           onClick={(e) => addToOrder(e, product)}
                         >
                           <div>
-                            <h6 className="mb-0">{product.name}</h6>
+                            <h6 className="mb-0">{product.nombre}</h6>
                             <small className="text-muted">
-                              {product.category}
+                              Estado:{" "}
+                              {product.estado === true ? "Activo" : "Inactivo"}
                             </small>
                           </div>
                           <Badge bg="primary">
-                            $
-                            {Number(product.price)
-                              .toFixed(0)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                            ${Number(product.precio).toLocaleString("es-ES")}
                           </Badge>
                         </ListGroup.Item>
                       ))
-                    : products?.map((product) => {
-                        <ListGroup.Item
-                          key={product.id}
-                          className="d-flex justify-content-between align-items-center"
-                          action
-                          onClick={(e) => addToOrder(e, product)}
-                        >
-                          <div>
-                            <h6 className="mb-0">{product.name}</h6>
-                            <small className="text-muted">
-                              {product.category}
-                            </small>
-                          </div>
-                          <Badge bg="primary">
-                            $
-                            {Number(product.price)
-                              .toFixed(0)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-                          </Badge>
-                        </ListGroup.Item>;
-                      })}
-                </ListGroup>
+                    ) : (
+                      <div>
+                        <h6 className="mb-0">
+                          No hay productos registrados en la base de datos.
+                        </h6>
+                      </div>
+                    )}
+                  </ListGroup>
+                </div>
               </Col>
 
               <Col md={6}>
                 <h5 className="mb-3">Productos Seleccionados</h5>
                 <ListGroup className="mb-3">
-                  {order.items.map((item) => (
+                  {order.items.map((item, index) => (
                     <ListGroup.Item
-                      key={item.id}
+                      key={item.id + index}
                       className="d-flex justify-content-between align-items-center"
                     >
                       <div>
-                        <h6 className="mb-0">{item.name}</h6>
+                        <h6 className="mb-0">{item.nombre}</h6>
                         <small className="text-muted">
-                          $
-                          {Number(item.price)
+                          ${" "}
+                          {Number(item.precio * item.cantidad)
                             .toFixed(0)
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-                          x {item.quantity}
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}{" "}
+                          x {item.cantidad}
                         </small>
                       </div>
                       <div className="d-flex align-items-center">
@@ -391,17 +292,18 @@ const TablesOrders = () => {
                           variant="outline-secondary"
                           size="sm"
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
+                            updateQuantity(item.id, item.cantidad - 1)
                           }
+                          disabled={item.cantidad <= 1} // Evitar valores negativos
                         >
                           -
                         </Button>
-                        <span className="mx-2">{item.quantity}</span>
+                        <span className="mx-2">{item.cantidad}</span>
                         <Button
                           variant="outline-secondary"
                           size="sm"
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
+                            updateQuantity(item.id, item.cantidad + 1)
                           }
                         >
                           +
@@ -410,7 +312,7 @@ const TablesOrders = () => {
                           variant="outline-danger"
                           size="sm"
                           className="ms-2"
-                          onClick={() => removeFromOrder(item.id)}
+                          onClick={() => removeFromOrder(item.productId)}
                         >
                           <FaTrash />
                         </Button>
@@ -424,16 +326,21 @@ const TablesOrders = () => {
                   <Form.Control
                     as="textarea"
                     rows={3}
-                    value={order.notes}
+                    value={order.notas}
                     onChange={(e) =>
-                      setOrder({ ...order, notes: e.target.value })
+                      setOrder({ ...order, notas: e.target.value })
                     }
                   />
                 </Form.Group>
 
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="mb-0">Total:</h5>
-                  <h5 className="mb-0">${calculateTotal().toFixed(2)}</h5>
+                  <h5 className="mb-0">
+                    ${" "}
+                    {calculateTotal()
+                      .toFixed(0)
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                  </h5>
                 </div>
               </Col>
             </Row>
@@ -456,47 +363,58 @@ const TablesOrders = () => {
           return (
             <Col key={table} xs={12} sm={6} md={4} lg={3} className="mb-4">
               <Card
-                className={`${
-                  active ? "border-warning" : "border-success"
-                } cursor-pointer`}
+                className={active ? "bg-primary" : "bg-success"}
+                style={{
+                  boxShadow:
+                    "6px 6px 12px rgba(0, 0, 0, 0.4), inset 0px -4px 8px rgba(0, 0, 0, 0.3)",
+                  transition:
+                    "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                  padding: "10px",
+                }}
                 onClick={() => handleTableSelect(table)}
+                onMouseEnter={(e) => {
+                  (e.currentTarget.style.boxShadow =
+                    "0px 8px 16px rgba(0, 0, 0, 0.3), inset 0px -2px 4px rgba(0, 0, 0, 0.4)"),
+                    (e.currentTarget.style.transform = "scale(1.05)");
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget.style.boxShadow =
+                    "6px 6px 12px rgba(0, 0, 0, 0.4), inset 0px -4px 8px rgba(0, 0, 0, 0.3)"),
+                    (e.currentTarget.style.transform = "scale(1)");
+                }}
               >
-                <Card.Body className="text-center">
+                <Card.Body
+                  style={{
+                    border: "1px solid white",
+                    borderRadius: "12px",
+                    padding: "5px",
+                  }}
+                  className="text-center"
+                >
                   <div className="position-relative mb-3">
-                    <FaUtensils
-                      size={24}
-                      className={active ? "text-warning" : ""}
-                    />
+                    <FaUtensils size={24} className="text-light" />
                     {active && (
                       <Badge
                         bg="warning"
-                        className="position-absolute top-0 start-100 translate-middle rounded-circle"
+                        className="position-absolute top-0 start-100 translate-middle rounded-circle d-flex align-items-center justify-content-center"
+                        style={{ width: "18px", height: "18px", padding: "0" }} // Ajusta el tamaño del badge
                       >
-                        <FaCheck size={8} />
+                        <FaCheck size={10} className="d-block" />
                       </Badge>
                     )}
                   </div>
-                  <Card.Title>Mesa {table}</Card.Title>
-                  <div className="mt-2">
+                  <Card.Title className="text-light">Mesa {table}</Card.Title>
+                  <div className="mt-2 d-flex justify-content-center">
                     {active ? (
-                      <Badge bg="warning" className="mb-2 d-block">
+                      <Badge bg="warning" className="mb-2 d-block w-50">
                         Mesa Abierta
                       </Badge>
                     ) : (
-                      <Badge bg="success" className="mb-2 d-block">
+                      <Badge bg="transparent" className="mb-2 d-block">
                         Mesa Disponible
                       </Badge>
-                    )}
-                  </div>
-                  <div className="mt-2">
-                    {active && (
-                      <Button
-                        variant="warning"
-                        className="text-white"
-                        onClick={() => setShowDetailsModal(true)}
-                      >
-                        Detalle
-                      </Button>
                     )}
                   </div>
                 </Card.Body>

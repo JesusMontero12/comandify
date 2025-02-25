@@ -17,8 +17,8 @@ function App() {
       <BrowserRouter>
         <ProductProvider>
           <InventoryProvider>
-            <OrdersProvider>
               <TablesProvider>
+            <OrdersProvider>
                 <Routes>
                   <Route element={<Layout />}>
                     <Route path="/" element={<TablesOrdersLogic />} />
@@ -31,8 +31,8 @@ function App() {
                     />
                   </Route>
                 </Routes>
-              </TablesProvider>
             </OrdersProvider>
+              </TablesProvider>
           </InventoryProvider>
         </ProductProvider>
       </BrowserRouter>
