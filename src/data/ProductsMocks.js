@@ -75,3 +75,70 @@ export const inventario = [
     fechaActualizacion: "2025-02-10",
   },
 ];
+
+export const orders = [
+  {
+    numeroMesa: 5,
+    estado: "open",
+    aperturaMesa: "2025-02-23T14:30:00Z",
+    cierreMesa: null,
+    items: [
+      {
+        productId: "abc123",
+        name: "Hamburguesa Clásica",
+        quantity: 2,
+        unitPrice: 8500,
+        totalPrice: 17000,
+        notes: "Sin cebolla",
+        ingredientsDeducted: [
+          {
+            ingredientId: "ing567",
+            name: "Pan de hamburguesa",
+            quantityDeducted: 2,
+          },
+          {
+            ingredientId: "ing890",
+            name: "Carne de res",
+            quantityDeducted: 2,
+          },
+        ],
+      },
+      {
+        productId: "xyz789",
+        name: "Papas Fritas",
+        quantity: 1,
+        unitPrice: 5000,
+        totalPrice: 5000,
+        notes: "Con extra queso",
+        ingredientsDeducted: [
+          {
+            ingredientId: "ing567",
+            name: "Pan de hamburguesa",
+            quantityDeducted: 2,
+          },
+          {
+            ingredientId: "ing890",
+            name: "Carne de res",
+            quantityDeducted: 2,
+          },
+        ],
+      },
+    ],
+    subtotal: 22000,
+    descuento: 2000,
+    total: 20000,
+    metodoPago: "Efectivo",
+    propina: 2000,
+    grandTotal: 22000,
+    mesero: {
+      id: "waiter001",
+      name: "Juan Pérez",
+    },
+    cliente: {
+      id: "customer123",
+      name: "Cliente Frecuente",
+      phone: "+56912345678",
+    },
+    ivaImpuesto: 1900,
+  },
+];
