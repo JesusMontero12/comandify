@@ -4,6 +4,8 @@ import { InventoryContext } from "../../../context/InventoryContext.jsx";
 import useToastMessage from "../../../hooks/useToastMessage.jsx";
 import { ProductContext } from "../../../context/ProductContext.jsx";
 import Swal from "sweetalert2";
+import { format } from "date-fns";
+import es from "date-fns/locale/es";
 
 const ProductsLogic = () => {
   const [showModal, setShowModal] = useState(false);
@@ -37,12 +39,12 @@ const ProductsLogic = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true); 
+    setLoading(true);
 
     setTimeout(() => {
       fetchProduct();
       setProducts(fetchProduct);
-      setLoading(false); 
+      setLoading(false);
     }, 2000);
   }, []);
 
@@ -117,9 +119,13 @@ const ProductsLogic = () => {
       ...newProduct,
       precio: Number(newProduct.precio),
       ...(isEditing === false && {
-        fechaRegistro: new Date().toISOString().split("T")[0],
+        fechaRegistro: format(new Date(), "dd/MM/yyyy hh:mm a", {
+          locale: es,
+        }),
       }),
-      fechaActualizacion: new Date().toISOString().split("T")[0],
+      fechaActualizacion: format(new Date(), "dd/MM/yyyy hh:mm a", {
+        locale: es,
+      }),
     };
 
     isEditing === true

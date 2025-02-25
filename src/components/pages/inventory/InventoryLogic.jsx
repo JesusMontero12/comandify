@@ -3,11 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
 import { InventoryContext } from "../../../context/InventoryContext.jsx";
 import useToastMessage from "../../../hooks/useToastMessage.jsx";
+import { format } from "date-fns";
+import es from "date-fns/locale/es";
 
 const InventoryLogic = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [search, setSearch] = useState("");
   const [newItem, setNewItem] = useState({
     nombre: "",
     stockInicial: "",
@@ -126,9 +127,13 @@ const InventoryLogic = () => {
       cantidadPeso: Number(newItem.cantidadPeso),
       costoUnitario: Number(newItem.costoUnitario),
       ...(isEditing === false && {
-        fechaRegistro: new Date().toISOString().split("T")[0],
+        fechaRegistro: format(new Date(), "dd/MM/yyyy hh:mm a", {
+          locale: es,
+        }),
       }),
-      fechaActualizacion: new Date().toISOString().split("T")[0],
+      fechaActualizacion: format(new Date(), "dd/MM/yyyy hh:mm a", {
+        locale: es,
+      }),
     };
 
     isEditing === true
